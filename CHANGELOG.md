@@ -15,8 +15,7 @@ We use *breaking* word for marking changes that are not backward compatible (rel
 
 - Relabel drop for Thanos Ruler to enable replica label drop and alert deduplication on AM side.
 - Query: Stores UI page available at `/stores`
-
-![](./docs/img/query_ui_stores.png)
+- Partial Response disable option for StoreAPI and QueryAPI
 
 ### Fixed
 
