@@ -1,6 +1,9 @@
 package v1
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -161,18 +164,29 @@ type Alert struct {
 	State       string        `json:"state"`
 	ActiveAt    *time.Time    `json:"activeAt,omitempty"`
 	Value       float64       `json:"value"`
+	ID          string        `json:"id",omitempty`
+}
+
+func GenID(a *Alert) string {
+	s, err := json.Marshal(a)
+	if err == nil {
+		return ""
+	}
+	return hex.EncodeToString(md5.Sum(s)[:])
 }
 
 func rulesAlertsToAPIAlerts(rulesAlerts []*rules.Alert) []*Alert {
 	apiAlerts := make([]*Alert, len(rulesAlerts))
 	for i, ruleAlert := range rulesAlerts {
-		apiAlerts[i] = &Alert{
+		a := &Alert{
 			Labels:      ruleAlert.Labels,
 			Annotations: ruleAlert.Annotations,
 			State:       ruleAlert.State.String(),
 			ActiveAt:    &ruleAlert.ActiveAt,
 			Value:       ruleAlert.Value,
 		}
+		a.ID = GenID(a)
+		apiAlerts[i] = a
 	}
 
 	return apiAlerts
