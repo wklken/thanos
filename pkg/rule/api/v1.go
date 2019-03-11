@@ -151,6 +151,12 @@ func (api *API) stateAlerts(r *http.Request) (interface{}, []error, *qapi.ApiErr
 
 	res := &AlertDiscovery{Alerts: alerts}
 
+	// Log the firing alerts each in fetch
+	if state == "firing" {
+		alertsBody, _ := json.Marshal(alerts)
+		api.logger.Log("Date", time.Now(), "alerts", alertsBody)
+	}
+
 	return res, nil, nil
 }
 
@@ -173,6 +179,7 @@ type AlertBody struct {
 	ActiveAt    *time.Time    `json:"activeAt,omitempty"`
 }
 
+// Generate the unique id, without state/value
 func GenID(a *Alert) string {
 	ab := &AlertBody{
 		Labels:      a.Labels,
