@@ -167,12 +167,24 @@ type Alert struct {
 	ID          string        `json:"id",omitempty`
 }
 
+type AlertBody struct {
+	Labels      labels.Labels `json:"labels"`
+	Annotations labels.Labels `json:"annotations"`
+	ActiveAt    *time.Time    `json:"activeAt,omitempty"`
+}
+
 func GenID(a *Alert) string {
-	s, err := json.Marshal(a)
-	if err == nil {
-		return ""
+	ab := &AlertBody{
+		Labels:      a.Labels,
+		Annotations: a.Annotations,
+		ActiveAt:    a.ActiveAt,
 	}
-	return hex.EncodeToString(md5.Sum(s)[:])
+	s, err := json.Marshal(ab)
+	if err != nil {
+		return "FailToGenID"
+	}
+	m := md5.Sum(s)
+	return hex.EncodeToString(m[:])
 }
 
 func rulesAlertsToAPIAlerts(rulesAlerts []*rules.Alert) []*Alert {
